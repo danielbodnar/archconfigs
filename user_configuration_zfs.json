@@ -1,0 +1,214 @@
+{
+    "app_config": {
+        "audio_config": {
+            "audio": "No audio server"
+        },
+        "bluetooth_config": {
+            "enabled": true
+        }
+    },
+    "archinstall-language": "English",
+    "auth_config": {},
+    "bootloader": "Systemd-boot",
+    "custom_commands": [
+        "curl -fsSL https://raw.githubusercontent.com/danielbodnar/archconfigs/main/scripts/dell-xps-init.sh | bash"
+    ],
+    "disk_config": {
+        "config_type": "manual_partitioning",
+        "device_modifications": [
+            {
+                "device": "/dev/nvme0n1",
+                "partitions": [
+                    {
+                        "btrfs": [],
+                        "dev_path": null,
+                        "flags": [
+                            "boot",
+                            "esp"
+                        ],
+                        "fs_type": "fat32",
+                        "mount_options": [],
+                        "mountpoint": "/boot",
+                        "obj_id": "efi-partition",
+                        "size": {
+                            "sector_size": {
+                                "unit": "B",
+                                "value": 512
+                            },
+                            "unit": "GiB",
+                            "value": 1
+                        },
+                        "start": {
+                            "sector_size": {
+                                "unit": "B",
+                                "value": 512
+                            },
+                            "unit": "MiB",
+                            "value": 1
+                        },
+                        "status": "create",
+                        "type": "primary"
+                    },
+                    {
+                        "btrfs": [],
+                        "dev_path": null,
+                        "flags": [],
+                        "fs_type": null,
+                        "mount_options": [],
+                        "mountpoint": null,
+                        "obj_id": "zfs-partition",
+                        "size": {
+                            "sector_size": {
+                                "unit": "B",
+                                "value": 512
+                            },
+                            "unit": "B",
+                            "value": 511033999360
+                        },
+                        "start": {
+                            "sector_size": {
+                                "unit": "B",
+                                "value": 512
+                            },
+                            "unit": "B",
+                            "value": 1074790400
+                        },
+                        "status": "create",
+                        "type": "primary"
+                    }
+                ],
+                "wipe": true
+            }
+        ]
+    },
+    "hostname": "xps",
+    "kernels": [
+        "linux",
+        "linux-zen"
+    ],
+    "locale_config": {
+        "kb_layout": "us",
+        "sys_enc": "UTF-8",
+        "sys_lang": "en_US.UTF-8"
+    },
+    "mirror_config": {
+        "custom_repositories": [
+            {
+                "name": "archzfs",
+                "url": "https://archzfs.com/$repo/$arch",
+                "sign_check": "Required",
+                "sign_option": "TrustedOnly"
+            }
+        ],
+        "custom_servers": [],
+        "mirror_regions": {
+            "United States": [
+                "https://mirrors.kernel.org/archlinux/$repo/os/$arch",
+                "https://mirrors.mit.edu/archlinux/$repo/os/$arch",
+                "https://mirror.fcix.net/archlinux/$repo/os/$arch",
+                "https://mirrors.rit.edu/archlinux/$repo/os/$arch",
+                "https://mirror.umd.edu/archlinux/$repo/os/$arch",
+                "https://ftp.osuosl.org/pub/archlinux/$repo/os/$arch"
+            ]
+        },
+        "optional_repositories": []
+    },
+    "network_config": {
+        "type": "iso"
+    },
+    "ntp": true,
+    "packages": [
+        "zfs-linux",
+        "zfs-linux-zen",
+        "zfs-utils",
+        "alacritty",
+        "awesome-terminal-fonts",
+        "bore",
+        "btop",
+        "cargo-audit",
+        "cargo-auditable",
+        "cargo-binstall",
+        "cargo-cache",
+        "cargo-clone",
+        "cargo-feature",
+        "cargo-generate",
+        "cargo-hack",
+        "cargo-insta",
+        "cargo-machete",
+        "cargo-make",
+        "cargo-outdated",
+        "cargo-release",
+        "cargo-run-bin",
+        "cargo-spellcheck",
+        "cargo-supply-chain",
+        "cargo-sweep",
+        "cargo-tauri",
+        "cargo-update",
+        "fuzzel",
+        "fwupd-efi",
+        "fzf",
+        "gemini-cli",
+        "ghostty",
+        "ghostty-shell-integration",
+        "ghostty-terminfo",
+        "intel-ucode",
+        "intelli-shell",
+        "iotop-c",
+        "kitty-terminfo",
+        "linux-firmware-intel",
+        "linux-firmware-nvidia",
+        "mise",
+        "navi",
+        "neovide",
+        "neovim",
+        "neovim-lspconfig",
+        "neovim-plugins",
+        "nerd-fonts",
+        "nushell",
+        "podman",
+        "podman-compose",
+        "podman-desktop",
+        "podman-docker",
+        "ripgrep",
+        "rustup",
+        "topology-toolkit",
+        "ttf-dejavu-nerd",
+        "ttf-firacode-nerd",
+        "ttf-hack-nerd",
+        "ttf-recursive-nerd",
+        "ttf-zed-mono-nerd",
+        "yazi",
+        "zed",
+        "seatd",
+        "shfmt",
+        "shellharden",
+        "shellcheck",
+        "skopeo",
+        "skim"
+    ],
+    "parallel_downloads": 5,
+    "profile_config": {
+        "gfx_driver": "All open-source",
+        "greeter": "sddm",
+        "profile": {
+            "custom_settings": {
+                "Hyprland": {
+                    "seat_access": "seatd"
+                }
+            },
+            "details": [
+                "Hyprland"
+            ],
+            "main": "Desktop"
+        }
+    },
+    "script": null,
+    "services": [
+        "zfs.target",
+        "zfs-import-cache.service",
+        "zfs-mount.service"
+    ],
+    "swap": false,
+    "timezone": "US/Central",
+    "version": "3.0.11"
+}
