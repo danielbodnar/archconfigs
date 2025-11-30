@@ -139,12 +139,36 @@ System configuration files extracted for easy deployment:
 
 ### user_credentials.json
 
-Contains user account information. Passwords set to `null` will prompt during installation.
+Contains user account information for automated installation.
 
-**Note**: Passwords can be set as:
-1. Actual password values (not recommended for public repos)
-2. Password hashes (recommended)
-3. `null` for interactive prompts
+**⚠️ Important for Automated Installation**: The netboot automated installation requires valid password hashes. Using `null` will cause the installation to hang waiting for input.
+
+**Generating password hashes:**
+
+```bash
+# Generate a yescrypt hash (recommended for archinstall)
+mkpasswd -m yescrypt 'your-password-here'
+
+# Or using openssl
+openssl passwd -6 'your-password-here'
+```
+
+Replace the example hashes in `user_credentials.json` with your generated hashes:
+
+```json
+{
+  "!root-password": "$y$j9T$YOUR_GENERATED_HASH_HERE$...",
+  "!users": [
+    {
+      "!password": "$y$j9T$YOUR_GENERATED_HASH_HERE$...",
+      "sudo": true,
+      "username": "daniel"
+    }
+  ]
+}
+```
+
+**Security Note**: Never commit real password hashes to public repositories. For private repos or local use, generate fresh hashes before installation.
 
 ## Validation
 
