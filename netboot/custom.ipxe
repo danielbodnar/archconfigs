@@ -4,10 +4,11 @@
 # Custom netboot.xyz menu for Arch Linux automated installation
 ###############################################################################
 
-# Configuration - customize these values for your setup
-isset ${github_user} || set github_user your-username
-isset ${github_repo} || set github_repo archconfigs
-set config_url https://raw.githubusercontent.com/${github_user}/${github_repo}/main/archinstall
+# Configuration - Update these values to match your fork/repo
+# NOTE: Using hardcoded values for reliability in iPXE chain loading
+set github_user danielbodnar
+set github_repo archconfigs
+set config_url https://raw.githubusercontent.com/danielbodnar/archconfigs/main/archinstall
 
 # Menu appearance
 set menu_color_border  37;40

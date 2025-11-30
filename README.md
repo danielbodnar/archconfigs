@@ -41,6 +41,14 @@ This repository provides:
 
 ## Quick Start - Dell XPS 15 9500
 
+### Prerequisites
+
+Make scripts executable after cloning:
+
+```bash
+chmod +x scripts/*.sh
+```
+
 ### Step 1: Pre-Install (ZFS Setup)
 
 Boot into the Arch Linux ISO and run:
