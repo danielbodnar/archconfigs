@@ -35,7 +35,7 @@ validate_json() {
 check_files() {
     local status=0
     
-    for file in user_configuration.json user_credentials.json user_disk_layout.json; do
+    for file in user_configuration.json user_credentials.json; do
         if [[ -f "$CONFIG_DIR/$file" ]]; then
             echo "✓ $file exists"
         else
@@ -55,11 +55,13 @@ echo ""
 echo "=== Validating JSON syntax ==="
 validation_status=0
 
+set +e
 for config_file in "$CONFIG_DIR"/*.json; do
     if ! validate_json "$config_file"; then
         validation_status=1
     fi
 done
+set -e
 
 echo ""
 if [[ $validation_status -eq 0 ]]; then

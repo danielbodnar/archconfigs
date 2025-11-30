@@ -12,9 +12,8 @@ This repository provides:
 
 ```
 ├── archinstall/                    # Archinstall configuration files
-│   ├── user_configuration.json     # System configuration (packages, locale, etc.)
-│   ├── user_credentials.json       # User accounts and passwords
-│   └── user_disk_layout.json       # Disk partitioning layout
+│   ├── user_configuration.json     # System configuration (packages, locale, disk, etc.)
+│   └── user_credentials.json       # User accounts and passwords
 ├── netboot/                        # Netboot.xyz files
 │   ├── custom.ipxe                 # Custom iPXE menu for Arch Linux
 │   └── boot.cfg                    # Boot configuration
@@ -44,8 +43,7 @@ GITHUB_USER="your-username"
 GITHUB_REPO="archconfigs"
 
 archinstall --config "https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/archinstall/user_configuration.json" \
-            --creds "https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/archinstall/user_credentials.json" \
-            --disk_layouts "https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/archinstall/user_disk_layout.json"
+            --creds "https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/archinstall/user_credentials.json"
 ```
 
 ## Configuration
@@ -61,6 +59,7 @@ Contains the main system configuration:
 - Bootloader
 - Audio configuration
 - Network configuration
+- Disk configuration (partitions, filesystems)
 - Profile (desktop environment, etc.)
 
 #### user_credentials.json
@@ -69,11 +68,12 @@ Contains user account information:
 - Root password
 - User accounts with passwords and sudo privileges
 
-**Note**: For security, consider using password hashes or environment variables instead of plaintext passwords.
+**Note**: Passwords in `user_credentials.json` can be set in three ways:
+1. As actual password values (not recommended for public repos).
+2. As password hashes (recommended for security).
+3. As `null`, which will cause `archinstall` to prompt interactively for passwords during installation.
 
-#### user_disk_layout.json
-
-Defines the disk partitioning scheme. The default configuration uses automatic partitioning.
+For security, consider using password hashes or environment variables instead of plaintext passwords. If you leave passwords as `null`, be prepared to enter them manually when prompted.
 
 ### Customization
 
@@ -83,6 +83,12 @@ Defines the disk partitioning scheme. The default configuration uses automatic p
 4. Commit and push your changes
 
 ## Validation
+
+First, make the scripts executable:
+
+```bash
+chmod +x scripts/*.sh
+```
 
 Validate your configuration files:
 
