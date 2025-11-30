@@ -1,0 +1,73 @@
+#!ipxe
+
+###############################################################################
+# Custom netboot.xyz menu for Arch Linux automated installation
+#
+# NOTE: Update the config_url below to match your GitHub fork/repo
+###############################################################################
+
+# Configuration URL - update this to point to your forked repo's archinstall configs
+set config_url https://raw.githubusercontent.com/danielbodnar/archconfigs/main/archinstall
+
+# Menu appearance
+set menu_color_border  37;40
+set menu_color_scroll  30;42
+set menu_color_tabmsg  33;40
+set menu_color_timeout 31;40
+set menu_color_title   33;40
+set menu_color_unsel   37;40
+set menu_color_sel     7;37;40
+
+:custom_menu
+clear custom_choice
+menu Custom Arch Linux Install Options
+item --gap --             --- Arch Linux Installation ---
+item archinstall_auto     Arch Linux - Automated Install
+item archinstall_manual   Arch Linux - Manual Install (archinstall guided)
+item arch_live            Arch Linux - Live Environment
+item --gap --             --- Utilities ---
+item memtest              Memory Test (memtest86+)
+item --gap --             --- Navigation ---
+item return               Return to Main Menu
+choose --default archinstall_auto --timeout 30000 custom_choice && goto ${custom_choice} || goto custom_menu
+goto custom_menu
+
+###############################################################################
+# Arch Linux Automated Installation
+###############################################################################
+:archinstall_auto
+echo Starting Arch Linux automated installation...
+kernel https://geo.mirror.pkgbuild.com/iso/latest/arch/boot/x86_64/vmlinuz-linux archisobasedir=arch archiso_http_srv=https://geo.mirror.pkgbuild.com/iso/latest/ ip=dhcp archinstall-config=${config_url}/user_configuration.json archinstall-creds=${config_url}/user_credentials.json
+initrd https://geo.mirror.pkgbuild.com/iso/latest/arch/boot/x86_64/initramfs-linux.img
+boot || goto custom_menu
+
+###############################################################################
+# Arch Linux Manual Installation (archinstall guided)
+###############################################################################
+:archinstall_manual
+echo Starting Arch Linux live environment for manual installation...
+kernel https://geo.mirror.pkgbuild.com/iso/latest/arch/boot/x86_64/vmlinuz-linux archisobasedir=arch archiso_http_srv=https://geo.mirror.pkgbuild.com/iso/latest/ ip=dhcp
+initrd https://geo.mirror.pkgbuild.com/iso/latest/arch/boot/x86_64/initramfs-linux.img
+boot || goto custom_menu
+
+###############################################################################
+# Arch Linux Live Environment
+###############################################################################
+:arch_live
+echo Starting Arch Linux live environment...
+kernel https://geo.mirror.pkgbuild.com/iso/latest/arch/boot/x86_64/vmlinuz-linux archisobasedir=arch archiso_http_srv=https://geo.mirror.pkgbuild.com/iso/latest/ ip=dhcp
+initrd https://geo.mirror.pkgbuild.com/iso/latest/arch/boot/x86_64/initramfs-linux.img
+boot || goto custom_menu
+
+###############################################################################
+# Memory Test
+###############################################################################
+:memtest
+echo Loading memtest86+...
+chain --autofree https://boot.netboot.xyz/ipxe/memtest || goto custom_menu
+
+###############################################################################
+# Return to main menu
+###############################################################################
+:return
+chain https://boot.netboot.xyz/menu.ipxe || goto custom_menu

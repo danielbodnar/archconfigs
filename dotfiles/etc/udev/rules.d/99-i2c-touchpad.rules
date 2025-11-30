@@ -1,0 +1,6 @@
+# Disable i2c power management to prevent ELAN touchpad lag
+# XPS 9500 touchpad shares i2c bus with touchscreen
+ACTION=="add", SUBSYSTEM=="i2c", ATTR{power/control}="on"
+
+# Keep ELAN touchpad powered
+ACTION=="add", SUBSYSTEM=="hid", ATTRS{idVendor}=="04f3", ATTRS{idProduct}=="311c", ATTR{power/control}="on"
