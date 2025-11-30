@@ -34,6 +34,22 @@ check_xps9500() {
     fi
 }
 
+enable_multilib() {
+    info "Checking multilib repository..."
+    
+    if ! grep -q "^\[multilib\]" /etc/pacman.conf; then
+        info "Enabling multilib repository for 32-bit packages..."
+        cat >> /etc/pacman.conf << 'EOF'
+
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+EOF
+        pacman -Sy --noconfirm
+    else
+        info "multilib repository already enabled"
+    fi
+}
+
 install_packages() {
     info "Installing driver packages..."
     
@@ -472,6 +488,7 @@ main() {
     
     check_root
     check_xps9500
+    enable_multilib
     
     install_packages
     configure_nvidia_kernel

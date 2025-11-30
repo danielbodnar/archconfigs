@@ -10,9 +10,7 @@
     "archinstall-language": "English",
     "auth_config": {},
     "bootloader": "Systemd-boot",
-    "custom_commands": [
-        "curl -fsSL https://raw.githubusercontent.com/danielbodnar/archconfigs/main/scripts/dell-xps-init.sh | bash"
-    ],
+    "custom_commands": [],
     "disk_config": {
         "config_type": "manual_partitioning",
         "device_modifications": [

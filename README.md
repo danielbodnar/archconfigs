@@ -43,15 +43,17 @@ This repository provides:
 
 ### Prerequisites
 
-Make scripts executable after cloning:
+- Boot into Arch Linux ISO (USB or netboot)
+- Connect to internet: `iwctl station wlan0 connect <SSID>`
 
+If cloning the repo locally:
 ```bash
 chmod +x scripts/*.sh
 ```
 
-### Step 1: Pre-Install (ZFS Setup)
+### Step 1: ZFS Setup (⚠️ Run First!)
 
-Boot into the Arch Linux ISO and run:
+**This must run BEFORE archinstall** — it partitions the disk and creates the ZFS pool:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/danielbodnar/archconfigs/main/scripts/dell-xps-init.sh | bash
@@ -64,21 +66,30 @@ This script:
 - Creates ZFS datasets (ROOT, home, var)
 - Mounts filesystems at /mnt
 
+Verify setup before continuing:
+```bash
+zpool list        # Should show 'zroot' pool
+findmnt /mnt      # Should show ZFS mount
+```
+
 ### Step 2: Run archinstall
+
+With filesystems already mounted at `/mnt`, archinstall will install to the existing layout:
 
 ```bash
 archinstall --config https://raw.githubusercontent.com/danielbodnar/archconfigs/main/archinstall/user_configuration.json
 ```
 
-### Step 3: Post-Install (Drivers & Hardware)
+### Step 3: Post-Install (After First Boot)
 
-After first boot, run:
+After rebooting into your new system, run:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/danielbodnar/archconfigs/main/scripts/xps9500-hyprland-setup.sh | sudo bash
 ```
 
 This script:
+- Enables multilib repository (for 32-bit packages)
 - Installs NVIDIA drivers (dkms)
 - Configures hybrid graphics
 - Sets up Hyprland for NVIDIA
