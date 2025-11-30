@@ -1,120 +1,177 @@
 # archconfigs
 
-Arch Linux automated installation configurations with netboot.xyz integration.
+Arch Linux automated installation configurations with netboot.xyz integration, optimized for Dell XPS 15 9500 with ZFS and Hyprland.
 
 ## Overview
 
 This repository provides:
-- **archinstall configurations**: JSON configuration files for automated Arch Linux installations
+- **archinstall configurations**: JSON configuration files for automated Arch Linux installations with ZFS
 - **netboot.xyz integration**: Custom iPXE menus for network booting Arch Linux
+- **Dell XPS 15 9500 scripts**: Pre-install and post-install setup scripts
+- **dotfiles**: System configuration files for NVIDIA, Hyprland, touchpad, etc.
 
 ## Directory Structure
 
 ```
-├── archinstall/                    # Archinstall configuration files
-│   ├── user_configuration.json     # System configuration (packages, locale, disk, etc.)
-│   └── user_credentials.json       # User accounts and passwords
-├── netboot/                        # Netboot.xyz files
-│   ├── custom.ipxe                 # Custom iPXE menu for Arch Linux
-│   └── boot.cfg                    # Boot configuration
-├── scripts/                        # Helper scripts
-│   ├── validate-configs.sh         # Validate JSON configuration files
-│   └── generate-config-url.sh      # Generate URLs for archinstall
+├── archinstall/                          # Archinstall configuration files
+│   ├── user_configuration.json           # System config (ZFS, Hyprland, packages)
+│   └── user_credentials.json             # User accounts and passwords
+├── dotfiles/                             # System configuration files
+│   ├── hypr/
+│   │   └── nvidia.conf                   # Hyprland NVIDIA environment vars
+│   └── etc/
+│       ├── modprobe.d/
+│       │   ├── nvidia.conf               # NVIDIA kernel module options
+│       │   └── audio.conf                # Audio fixes
+│       ├── X11/xorg.conf.d/
+│       │   └── 30-touchpad.conf          # Touchpad configuration
+│       └── udev/rules.d/
+│           ├── 80-nvidia-pm.rules        # NVIDIA power management
+│           └── 99-i2c-touchpad.rules     # Touchpad power management
+├── netboot/                              # Netboot.xyz files
+│   ├── custom.ipxe                       # Custom iPXE menu for Arch Linux
+│   └── boot.cfg                          # Boot configuration
+├── scripts/                              # Helper scripts
+│   ├── dell-xps-init.sh                  # ZFS pre-install script
+│   ├── xps9500-hyprland-setup.sh         # Post-install driver setup
+│   ├── validate-configs.sh               # Validate JSON configuration files
+│   └── generate-config-url.sh            # Generate URLs for archinstall
 └── README.md
 ```
 
-## Quick Start
+## Quick Start - Dell XPS 15 9500
+
+### Step 1: Pre-Install (ZFS Setup)
+
+Boot into the Arch Linux ISO and run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/danielbodnar/archconfigs/main/scripts/dell-xps-init.sh | bash
+```
+
+This script:
+- Installs ZFS on archiso
+- Partitions the disk (1GB EFI + ZFS)
+- Creates ZFS pool with optimal settings
+- Creates ZFS datasets (ROOT, home, var)
+- Mounts filesystems at /mnt
+
+### Step 2: Run archinstall
+
+```bash
+archinstall --config https://raw.githubusercontent.com/danielbodnar/archconfigs/main/archinstall/user_configuration.json
+```
+
+### Step 3: Post-Install (Drivers & Hardware)
+
+After first boot, run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/danielbodnar/archconfigs/main/scripts/xps9500-hyprland-setup.sh | sudo bash
+```
+
+This script:
+- Installs NVIDIA drivers (dkms)
+- Configures hybrid graphics
+- Sets up Hyprland for NVIDIA
+- Configures touchpad, audio, Bluetooth
+- Sets up power management
+
+### Step 4: Configure Hyprland
+
+Add to `~/.config/hypr/hyprland.conf`:
+
+```
+source = /etc/hypr/nvidia.conf
+```
+
+## Network Boot Installation
 
 ### Option 1: Network Boot with netboot.xyz
 
-1. Set up a netboot.xyz server (see [netboot.xyz documentation](https://netboot.xyz/docs/selfhosting/))
+1. Set up a netboot.xyz server
 2. Copy the `netboot/` files to your server
 3. Update the `github_user` and `github_repo` variables in `netboot/boot.cfg`
 4. Boot your machine via PXE and select the custom menu
 
-### Option 2: Manual Installation
-
-1. Boot into the Arch Linux ISO
-2. Run archinstall with the configuration URLs:
+### Option 2: Manual URL Installation
 
 ```bash
-# Set your GitHub username and repo
-GITHUB_USER="your-username"
-GITHUB_REPO="archconfigs"
-
-archinstall --config "https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/archinstall/user_configuration.json" \
-            --creds "https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/archinstall/user_credentials.json"
+archinstall --config "https://raw.githubusercontent.com/danielbodnar/archconfigs/main/archinstall/user_configuration.json" \
+            --creds "https://raw.githubusercontent.com/danielbodnar/archconfigs/main/archinstall/user_credentials.json"
 ```
 
-## Configuration
+## Configuration Details
 
-### Archinstall Configuration Files
+### user_configuration.json
 
-#### user_configuration.json
+The main archinstall configuration includes:
+- **Hostname**: `xps`
+- **Kernels**: `linux`, `linux-zen`
+- **Bootloader**: Systemd-boot
+- **Disk**: Manual ZFS partitioning
+- **Desktop**: Hyprland with sddm greeter
+- **Graphics**: All open-source drivers
+- **Custom repos**: archzfs for ZFS packages
 
-Contains the main system configuration:
-- Hostname
-- Locale settings
-- Package selection
-- Bootloader
-- Audio configuration
-- Network configuration
-- Disk configuration (partitions, filesystems)
-- Profile (desktop environment, etc.)
+### Packages
 
-#### user_credentials.json
+The configuration installs a curated set of packages including:
+- **ZFS**: zfs-linux, zfs-linux-zen, zfs-utils
+- **Terminal**: ghostty, alacritty, nushell
+- **Editor**: neovim, neovide, zed
+- **Rust tools**: cargo-*, rustup
+- **Containers**: podman, podman-compose, podman-desktop
+- **Fonts**: nerd-fonts, ttf-firacode-nerd, ttf-hack-nerd
 
-Contains user account information:
-- Root password
-- User accounts with passwords and sudo privileges
+### Dotfiles
 
-**Note**: Passwords in `user_credentials.json` can be set in three ways:
-1. As actual password values (not recommended for public repos).
-2. As password hashes (recommended for security).
-3. As `null`, which will cause `archinstall` to prompt interactively for passwords during installation.
+System configuration files extracted for easy deployment:
 
-For security, consider using password hashes or environment variables instead of plaintext passwords. If you leave passwords as `null`, be prepared to enter them manually when prompted.
+| File | Purpose |
+|------|---------|
+| `dotfiles/hypr/nvidia.conf` | Hyprland NVIDIA environment variables |
+| `dotfiles/etc/modprobe.d/nvidia.conf` | NVIDIA kernel module options |
+| `dotfiles/etc/modprobe.d/audio.conf` | Intel HDA audio fixes |
+| `dotfiles/etc/X11/xorg.conf.d/30-touchpad.conf` | XWayland touchpad config |
+| `dotfiles/etc/udev/rules.d/80-nvidia-pm.rules` | NVIDIA power management |
+| `dotfiles/etc/udev/rules.d/99-i2c-touchpad.rules` | Touchpad power fixes |
 
-### Customization
+### user_credentials.json
 
-1. Fork this repository
-2. Edit the JSON files in `archinstall/` to match your requirements
-3. Update the URLs in `netboot/custom.ipxe` and `netboot/boot.cfg`
-4. Commit and push your changes
+Contains user account information. Passwords set to `null` will prompt during installation.
+
+**Note**: Passwords can be set as:
+1. Actual password values (not recommended for public repos)
+2. Password hashes (recommended)
+3. `null` for interactive prompts
 
 ## Validation
 
-First, make the scripts executable:
-
 ```bash
 chmod +x scripts/*.sh
-```
-
-Validate your configuration files:
-
-```bash
 ./scripts/validate-configs.sh
 ```
 
-Generate configuration URLs:
+## Hardware Specifics
 
-```bash
-GITHUB_USER="your-username" GITHUB_REPO="archconfigs" ./scripts/generate-config-url.sh
-```
+### Dell XPS 15 9500
+- **CPU**: Intel Core i7-10750H
+- **GPU**: NVIDIA GTX 1650 Ti + Intel UHD 630
+- **Wi-Fi**: Killer Wi-Fi 6 AX1650
+- **Touchpad**: ELAN (requires firmware updates)
 
-## Security Considerations
-
-- **Never commit plaintext passwords** to public repositories
-- Use password hashes where possible
-- Consider using private repositories for sensitive configurations
-- The `user_credentials.json` file contains sensitive data - handle with care
+### Known Issues
+- Fingerprint reader not supported on Linux
+- Deep sleep (S3) may have issues - s2idle recommended
+- Touchpad may be laggy without firmware update (`update-touchpad-firmware`)
 
 ## Resources
 
 - [Archinstall Documentation](https://wiki.archlinux.org/title/Archinstall)
-- [Archinstall GitHub](https://github.com/archlinux/archinstall)
+- [ZFS on Arch Linux](https://wiki.archlinux.org/title/ZFS)
+- [Hyprland Wiki](https://wiki.hyprland.org/)
 - [netboot.xyz Documentation](https://netboot.xyz/docs/)
-- [iPXE Documentation](https://ipxe.org/docs)
 
 ## License
 
