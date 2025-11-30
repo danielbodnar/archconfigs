@@ -146,10 +146,10 @@ Contains user account information for automated installation.
 **Generating password hashes:**
 
 ```bash
-# Generate a yescrypt hash (recommended for archinstall)
+# Generate a yescrypt hash (recommended for archinstall, produces $y$ format)
 mkpasswd -m yescrypt 'your-password-here'
 
-# Or using openssl
+# Alternative: SHA-512 hash (produces $6$ format, also supported)
 openssl passwd -6 'your-password-here'
 ```
 
