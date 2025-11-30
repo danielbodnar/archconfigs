@@ -4,6 +4,11 @@
 # Custom netboot.xyz menu for Arch Linux automated installation
 ###############################################################################
 
+# Configuration - customize these values for your setup
+isset ${github_user} || set github_user your-username
+isset ${github_repo} || set github_repo archconfigs
+set config_url https://raw.githubusercontent.com/${github_user}/${github_repo}/main/archinstall
+
 # Menu appearance
 set menu_color_border  37;40
 set menu_color_scroll  30;42
@@ -32,8 +37,6 @@ goto custom_menu
 ###############################################################################
 :archinstall_auto
 echo Starting Arch Linux automated installation...
-# Set the configuration URL - customize this to your server hosting the configs
-set config_url https://raw.githubusercontent.com/${github_user}/${github_repo}/main/archinstall
 kernel https://geo.mirror.pkgbuild.com/iso/latest/arch/boot/x86_64/vmlinuz-linux archisobasedir=arch archiso_http_srv=https://geo.mirror.pkgbuild.com/iso/latest/ ip=dhcp archinstall-config=${config_url}/user_configuration.json archinstall-creds=${config_url}/user_credentials.json
 initrd https://geo.mirror.pkgbuild.com/iso/latest/arch/boot/x86_64/initramfs-linux.img
 boot || goto custom_menu
