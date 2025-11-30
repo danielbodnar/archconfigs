@@ -44,6 +44,7 @@ enable_multilib() {
 [multilib]
 Include = /etc/pacman.d/mirrorlist
 EOF
+        # Only refresh database - full update happens during package installation
         pacman -Sy --noconfirm
     else
         info "multilib repository already enabled"
