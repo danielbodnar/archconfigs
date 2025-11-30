@@ -34,23 +34,6 @@ check_xps9500() {
     fi
 }
 
-enable_multilib() {
-    info "Checking multilib repository..."
-    
-    if ! grep -q "^\[multilib\]" /etc/pacman.conf; then
-        info "Enabling multilib repository for 32-bit packages..."
-        cat >> /etc/pacman.conf << 'EOF'
-
-[multilib]
-Include = /etc/pacman.d/mirrorlist
-EOF
-        # Only refresh database - full update happens during package installation
-        pacman -Sy --noconfirm
-    else
-        info "multilib repository already enabled"
-    fi
-}
-
 install_packages() {
     info "Installing driver packages..."
     
@@ -59,16 +42,12 @@ install_packages() {
         linux-zen-headers \
         nvidia-dkms \
         nvidia-utils \
-        lib32-nvidia-utils \
         nvidia-settings \
         nvidia-prime \
         libva-nvidia-driver \
         vulkan-icd-loader \
-        lib32-vulkan-icd-loader \
         mesa \
-        lib32-mesa \
         vulkan-intel \
-        lib32-vulkan-intel \
         intel-media-driver \
         libva-intel-driver \
         intel-gpu-tools \
@@ -489,7 +468,6 @@ main() {
     
     check_root
     check_xps9500
-    enable_multilib
     
     install_packages
     configure_nvidia_kernel
